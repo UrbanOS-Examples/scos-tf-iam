@@ -28,6 +28,7 @@ until [ ${#} -eq 0 ]; do
             shift
             ;;
     esac
+    shift
 done
 
 set -e
