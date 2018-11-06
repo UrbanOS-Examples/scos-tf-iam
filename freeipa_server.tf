@@ -21,6 +21,17 @@ resource "aws_instance" "freeipa_master" {
     }
   }
 
+  provisioner "file" {
+    source      = "${path.module}/files/freeipa/add_binduser.sh"
+    destination = "/tmp/add_binduser.sh"
+
+    connection {
+      type = "ssh"
+      host = "${self.private_ip}"
+      user = "fedora"
+    }
+  }
+
   provisioner "remote-exec" {
     inline = [
       <<EOF
@@ -31,6 +42,14 @@ sudo bash /tmp/setup_master.sh \
   --admin-password ${random_string.freeipa_admin_password.result} \
   --freeipa-version ${var.freeipa_version}
 EOF
+      ,
+      <<EOF
+sudo bash /tmp/add_binduser.sh \
+  --user-password ${local.binduser_password} \
+  --realm-name ${var.realm_name} \
+  --admin-password ${random_string.freeipa_admin_password.result}
+EOF
+      ,
     ]
 
     connection {
