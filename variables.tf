@@ -3,7 +3,6 @@ locals {
     iam_instance_ami  = "ami-055ddd16f0e2c2e5d"
     tcp_ports         = "53,80,88,389,443,464,636,7389,9443,9444,9445"
     udp_ports         = "53,88,123,464"
-    binduser_password = "foobarbaz123"
 }
 
 variable "freeipa_replica_count" {

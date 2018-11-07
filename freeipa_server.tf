@@ -45,7 +45,7 @@ EOF
       ,
       <<EOF
 sudo bash /tmp/add_binduser.sh \
-  --user-password ${local.binduser_password} \
+  --user-password ${random_string.bind_user_password.result} \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result}
 EOF
@@ -170,6 +170,29 @@ EOF
 }
 
 resource "random_string" "freeipa_admin_password" {
-  length = 40
+  length  = 40
   special = false
+}
+
+resource "aws_secretsmanager_secret" "freeipa_admin_password" {
+  name = "${terraform.workspace}-freeipa-admin-password"
+}
+
+resource "aws_secretsmanager_secret_version" "freeipa_admin_password" {
+  secret_id     = "${aws_secretsmanager_secret.freeipa_admin_password.id}"
+  secret_string = "${random_string.freeipa_admin_password.result}"
+}
+
+resource "random_string" "bind_user_password" {
+  length  = 40
+  special = false
+}
+
+resource "aws_secretsmanager_secret" "bind_user_password" {
+  name = "${terraform.workspace}-bind-user-password"
+}
+
+resource "aws_secretsmanager_secret_version" "bind_user_password" {
+  secret_id     = "${aws_secretsmanager_secret.bind_user_password.id}"
+  secret_string = "${random_string.bind_user_password.result}"
 }

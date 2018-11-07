@@ -7,3 +7,13 @@ output "keycloak_server_ip" {
   description = "The ip address of the keycloak host"
   value       = "${aws_instance.keycloak_server.*.private_ip}"
 }
+
+output "freeipa_admin_password_secret_id" {
+  description = "The SecretsManager ID for the FreeIPA admin password"
+  value       = "${aws_secretsmanager_secret_version.freeipa_admin_password.arn}"
+}
+
+output "bind_user_password_secret_id" {
+  description = "The SecretsManager ID for the bind user password"
+  value       = "${aws_secretsmanager_secret_version.bind_user_password.arn}"
+}
