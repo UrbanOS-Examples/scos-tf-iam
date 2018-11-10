@@ -17,3 +17,8 @@ output "bind_user_password_secret_id" {
   description = "The SecretsManager ID for the bind user password"
   value       = "${aws_secretsmanager_secret_version.bind_user_password.arn}"
 }
+
+output "bind_user_password" {
+  description = "binduser password"
+  value       = "${random_string.bind_user_password.result}"
+}
