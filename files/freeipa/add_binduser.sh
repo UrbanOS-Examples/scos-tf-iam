@@ -27,7 +27,7 @@ set -e
 echo "${admin_password}" | kinit "admin@${realm_name^^}"
 
 # Add the bind user service account
-ipa useradd binduser --first=bind --last=user
+ipa user-add binduser --first=bind --last=user
 
 # Set the user password based on the determined password
 ipa passwd binduser "${user_password}"
