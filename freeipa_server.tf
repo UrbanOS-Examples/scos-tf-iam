@@ -176,6 +176,7 @@ resource "random_string" "freeipa_admin_password" {
 
 resource "aws_secretsmanager_secret" "freeipa_admin_password" {
   name = "${terraform.workspace}-freeipa-admin-password"
+  recovery_window_in_days = "${var.recovery_window_in_days}"
 }
 
 resource "aws_secretsmanager_secret_version" "freeipa_admin_password" {
@@ -190,6 +191,7 @@ resource "random_string" "bind_user_password" {
 
 resource "aws_secretsmanager_secret" "bind_user_password" {
   name = "${terraform.workspace}-bind-user-password"
+  recovery_window_in_days = "${var.recovery_window_in_days}"
 }
 
 resource "aws_secretsmanager_secret_version" "bind_user_password" {

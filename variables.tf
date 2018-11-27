@@ -71,3 +71,7 @@ variable "alb_certificate" {
   description = "The certificate to attach to the keycloak load balancer"
   default     = ""
 }
+
+variable "recovery_window_in_days" {
+  description = "How long to allow secrets to be recovered if they are deleted"
+}
