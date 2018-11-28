@@ -22,3 +22,8 @@ output "bind_user_password" {
   description = "binduser password"
   value       = "${random_string.bind_user_password.result}"
 }
+
+output "reverse_dns_zone_id" {
+  description = "The zone id of the reverse dns zone for the IAM stack"
+  value       = "${aws_route53_zone.public_hosted_reverse_zone.zone_id}"
+}
