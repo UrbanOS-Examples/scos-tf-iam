@@ -75,3 +75,14 @@ variable "alb_certificate" {
 variable "recovery_window_in_days" {
   description = "How long to allow secrets to be recovered if they are deleted"
 }
+
+variable "extra_users" {
+  type        = "list"
+  description = "List of maps of extra users to add to freeipa"
+  default     = []
+}
+
+variable "extra_users_count" {
+  description = "The number of extra users to be added"
+  default     = 0
+}

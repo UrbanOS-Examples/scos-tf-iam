@@ -13,16 +13,6 @@ output "freeipa_admin_password_secret_id" {
   value       = "${aws_secretsmanager_secret_version.freeipa_admin_password.arn}"
 }
 
-output "bind_user_password_secret_id" {
-  description = "The SecretsManager ID for the bind user password"
-  value       = "${aws_secretsmanager_secret_version.bind_user_password.arn}"
-}
-
-output "bind_user_password" {
-  description = "binduser password"
-  value       = "${random_string.bind_user_password.result}"
-}
-
 output "reverse_dns_zone_id" {
   description = "The zone id of the reverse dns zone for the IAM stack"
   value       = "${aws_route53_zone.public_hosted_reverse_zone.zone_id}"

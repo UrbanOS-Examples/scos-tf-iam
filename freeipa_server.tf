@@ -21,17 +21,6 @@ resource "aws_instance" "freeipa_master" {
     }
   }
 
-  provisioner "file" {
-    source      = "${path.module}/files/freeipa/add_binduser.sh"
-    destination = "/tmp/add_binduser.sh"
-
-    connection {
-      type = "ssh"
-      host = "${self.private_ip}"
-      user = "fedora"
-    }
-  }
-
   provisioner "remote-exec" {
     inline = [
       <<EOF
@@ -42,14 +31,6 @@ sudo bash /tmp/setup_master.sh \
   --admin-password ${random_string.freeipa_admin_password.result} \
   --freeipa-version ${var.freeipa_version}
 EOF
-      ,
-      <<EOF
-sudo bash /tmp/add_binduser.sh \
-  --user-password ${random_string.bind_user_password.result} \
-  --realm-name ${var.realm_name} \
-  --admin-password ${random_string.freeipa_admin_password.result}
-EOF
-      ,
     ]
 
     connection {
@@ -182,19 +163,4 @@ resource "aws_secretsmanager_secret" "freeipa_admin_password" {
 resource "aws_secretsmanager_secret_version" "freeipa_admin_password" {
   secret_id     = "${aws_secretsmanager_secret.freeipa_admin_password.id}"
   secret_string = "${random_string.freeipa_admin_password.result}"
-}
-
-resource "random_string" "bind_user_password" {
-  length  = 40
-  special = false
-}
-
-resource "aws_secretsmanager_secret" "bind_user_password" {
-  name = "${terraform.workspace}-bind-user-password"
-  recovery_window_in_days = "${var.recovery_window_in_days}"
-}
-
-resource "aws_secretsmanager_secret_version" "bind_user_password" {
-  secret_id     = "${aws_secretsmanager_secret.bind_user_password.id}"
-  secret_string = "${random_string.bind_user_password.result}"
 }
