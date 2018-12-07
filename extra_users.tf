@@ -24,7 +24,7 @@ resource "null_resource" "extra_users" {
     inline = [
       <<EOF
 sudo bash /home/fedora/add_user.sh \
-  --username ${lookup(var.extra_users[count.index], "name")} \
+  --username ${lookup(var.extra_users[count.index], "username")} \
   --password ${lookup(var.extra_users[count.index], "password")} \
   --first-name ${lookup(var.extra_users[count.index], "first_name")} \
   --last-name ${lookup(var.extra_users[count.index], "last_name")} \
