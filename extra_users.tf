@@ -28,6 +28,7 @@ sudo bash /home/fedora/add_user.sh \
   --password ${lookup(var.extra_users[count.index], "password")} \
   --first-name ${lookup(var.extra_users[count.index], "first_name")} \
   --last-name ${lookup(var.extra_users[count.index], "last_name")} \
+  ${lookup(var.extra_users[count.index], "groups") != "" ? "--groups ${lookup(var.extra_users[count.index], "groups")}" : ""} \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result}
 EOF
@@ -42,6 +43,6 @@ EOF
 
   triggers {
     add_user_script = "${sha256(file("${path.module}/files/freeipa/add_user.sh"))}"
-    user_password_hash = "${sha256("${lookup(var.extra_users[count.index], "name")}:${lookup(var.extra_users[count.index], "password")}")}"
+    user_password_hash = "${sha256("${lookup(var.extra_users[count.index], "username")}:${lookup(var.extra_users[count.index], "password")}")}"
   }
 }

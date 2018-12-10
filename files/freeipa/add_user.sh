@@ -6,6 +6,7 @@ last_name=
 user_password=
 realm_name=
 admin_password=
+groups=
 
 until [ ${#} -eq 0 ]; do
     case "${1}" in
@@ -23,6 +24,10 @@ until [ ${#} -eq 0 ]; do
             ;;
         --password)
             password=${2}
+            shift
+            ;;
+        --groups)
+            groups=$(echo ${2} | sed -e 's/,/\n/')
             shift
             ;;
         --realm-name)
@@ -49,8 +54,16 @@ fi
 # Set the user password based on the determined password
 ipa passwd ${username} "${password}"
 
-if ipa group-show ipausers | grep 'Member users: ' | grep -q " ${username},"; then
-    # User account only needs read access to the directory tree.
-    # Remove the user from the default group to further lock down access
-    ipa group-remove-member ipausers --user=${username}
-fi
+current_groups=$(ipa user-show --all ${username} | grep -oP '^  Member of groups: \K.*$' | sed -e 's/, /\n/')
+
+for group in ${current_groups[@]}; do
+    if echo ${groups} | grep -vq "${group}"; then
+        ipa group-remove-member ${group} --users=${username} > /dev/null
+    fi
+done
+
+for group in ${groups[@]}; do
+    if echo ${current_groups} | grep -vq "${group}"; then
+        ipa group-add-member ${group} --users=${username} > /dev/null
+    fi
+done
