@@ -17,3 +17,12 @@ output "reverse_dns_zone_id" {
   description = "The zone id of the reverse dns zone for the IAM stack"
   value       = "${aws_route53_zone.public_hosted_reverse_zone.zone_id}"
 }
+
+output "freeipa_master_instance_id" {
+  description = "The instance id the iam-master ec2 instance"
+  value = "${aws_instance.freeipa_master.id}"
+}
+output "freeipa_replica_instance_ids" {
+  description = "The instance id the iam-master ec2 instance"
+  value = ["${aws_instance.freeipa_replica.*.id}"]
+}

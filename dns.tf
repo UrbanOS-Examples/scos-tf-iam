@@ -16,7 +16,7 @@ resource "aws_route53_zone" "public_hosted_reverse_zone" {
 
 resource "aws_route53_record" "freeipa_master_host_record" {
   zone_id = "${var.zone_id}"
-  name    = "${var.iam_hostname_prefix}-master"
+  name    = "${var.kerberos_hostname_prefix}-master"
   type    = "A"
   ttl     = 5
   records = ["${aws_instance.freeipa_master.private_ip}"]
@@ -25,7 +25,7 @@ resource "aws_route53_record" "freeipa_master_host_record" {
 resource "aws_route53_record" "freeipa_replica_host_record" {
   count   = "${var.freeipa_replica_count}"
   zone_id = "${var.zone_id}"
-  name    = "${var.iam_hostname_prefix}-replica-${count.index}"
+  name    = "${var.kerberos_hostname_prefix}-replica-${count.index}"
   type    = "A"
   ttl     = 5
   records = ["${element("${aws_instance.freeipa_replica.*.private_ip}", "${count.index}")}"]
@@ -63,7 +63,7 @@ resource "aws_route53_record" "freeipa_master_host_reverse_record" {
   name    = "${local.freeipa_master_octet_4}.${local.freeipa_master_octet_3}"
   type    = "PTR"
   ttl     = 5
-  records = ["${var.iam_hostname_prefix}-master.${var.zone_name}"]
+  records = ["${var.kerberos_hostname_prefix}-master.${var.zone_name}"]
 }
 
 resource "aws_route53_record" "freeipa_replica_host_reverse_record" {
@@ -73,5 +73,5 @@ resource "aws_route53_record" "freeipa_replica_host_reverse_record" {
   name    = "${element("${split(".", "${element("${aws_instance.freeipa_replica.*.private_ip}", "${count.index}")}")}", 3)}.${element("${split(".", "${element("${aws_instance.freeipa_replica.*.private_ip}", "${count.index}")}")}", 2)}"
   type    = "PTR"
   ttl     = 5
-  records = ["${var.iam_hostname_prefix}-replica-${count.index}.${var.zone_name}"]
+  records = ["${var.kerberos_hostname_prefix}-replica-${count.index}.${var.zone_name}"]
 }
