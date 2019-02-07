@@ -42,7 +42,7 @@ variable "realm_cidr" {
 
 variable "iam_hostname_prefix" {
   description = "The name prefix of the iam server"
-  default     = "iam"
+  default     = "ldap"
 }
 
 variable "zone_id" {
