@@ -25,7 +25,7 @@ resource "aws_instance" "freeipa_master" {
     inline = [
       <<EOF
 sudo bash /tmp/setup_master.sh \
-  --hostname ${var.iam_hostname_prefix}-master \
+  --hostname ldap \
   --hosted-zone ${var.zone_name} \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result} \
