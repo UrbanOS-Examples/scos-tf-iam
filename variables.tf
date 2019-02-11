@@ -45,6 +45,11 @@ variable "iam_hostname_prefix" {
   default     = "iam"
 }
 
+variable "kerberos_hostname_prefix" {
+  description = "The name prefix of the iam server"
+  default     = "kerberos"
+}
+
 variable "zone_id" {
   description = "The output id of the primary dns zone."
 }
