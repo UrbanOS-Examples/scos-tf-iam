@@ -5,9 +5,13 @@ locals {
 }
 
 resource "aws_route53_zone" "public_hosted_reverse_zone" {
-  name              = "${local.reverse_cidr}.in-addr.arpa"
-  vpc_id            = "${var.vpc_id}"
-  force_destroy     = true
+  name = "${local.reverse_cidr}.in-addr.arpa"
+
+  vpc {
+    vpc_id = "${var.vpc_id}"
+  }
+
+  force_destroy = true
 
   tags = {
     Environment = "${terraform.workspace}"
@@ -69,6 +73,7 @@ resource "aws_route53_record" "freeipa_master_host_reverse_record" {
 resource "aws_route53_record" "freeipa_replica_host_reverse_record" {
   count   = "${var.freeipa_replica_count}"
   zone_id = "${aws_route53_zone.public_hosted_reverse_zone.zone_id}"
+
   # Terraform is unable to do a functional "map" transform on a list, so this cannot be broken out of the resource definition because it depends on `count.index` to parse the octets
   name    = "${element("${split(".", "${element("${aws_instance.freeipa_replica.*.private_ip}", "${count.index}")}")}", 3)}.${element("${split(".", "${element("${aws_instance.freeipa_replica.*.private_ip}", "${count.index}")}")}", 2)}"
   type    = "PTR"
