@@ -45,6 +45,8 @@ hostnamectl set-hostname "${hostname}.${hosted_zone}"
 
 dnf -y install freeipa-server-${freeipa_version}
 
+export PKISPAWN_STARTUP_TIMEOUT_SECONDS=600
+
 ipa-server-install \
   --ds-password=${admin_password} \
   --admin-password=${admin_password} \
