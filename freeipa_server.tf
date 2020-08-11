@@ -96,7 +96,8 @@ sudo bash /tmp/setup_replica.sh \
   --hosted-zone ${var.zone_name} \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result} \
-  --freeipa-version ${var.freeipa_version}
+  --freeipa-version ${var.freeipa_version} \
+  --main-ip-address ${aws_instance.freeipa_master.private_ip}
 EOF
     ]
 
