@@ -18,6 +18,6 @@ until ipa-replica-install; do
   sleep 30
 done
 
-echo "${admin_password}" | ipa-ca-install
+echo "${admin_password}" | ipa-ca-install --no-host-dns
 
 ipa-pkinit-manage enable
