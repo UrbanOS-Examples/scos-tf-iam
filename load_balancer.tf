@@ -86,9 +86,13 @@ resource "aws_lb_target_group_attachment" "ldap_web" {
 resource "aws_route53_record" "ldap" {
   zone_id = "${var.zone_id}"
   name    = "${var.iam_hostname_prefix}-master"
-  type    = "CNAME"
-  ttl     = "300"
-  records = ["${aws_lb.ldap_lb.dns_name}"]
+  type    = "A"
+
+  alias {
+    name                   = "${aws_lb.ldap_lb.dns_name}"
+    zone_id                = "${aws_lb.ldap_lb.zone_id}"
+    evaluate_target_health = false
+  }
 
   lifecycle {
     ignore_changes = ["name", "allow_overwrite"]

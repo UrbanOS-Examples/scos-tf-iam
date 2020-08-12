@@ -33,6 +33,7 @@ echo "${admin_password}" | kinit "admin@${realm_name^^}"
 
 until ipa host-find | grep ${hostname}; do
   sleep 10
-done 
+done
 
+ipa hostgroup-remove-member ipaservers --hosts "${hostname}.${hosted_zone}" || echo "did not need to remove ${hostname}.${hosted_zone} from hostgroup"
 ipa hostgroup-add-member ipaservers --hosts "${hostname}.${hosted_zone}"

@@ -1,6 +1,6 @@
 locals {
     iam_instance_type = "t3.medium"
-    iam_instance_ami  = "ami-055ddd16f0e2c2e5d"
+    iam_instance_ami  = "ami-0677b95262b16499f"
     tcp_ports         = "53,80,88,389,443,464,636,749,7389,9443,9444,9445"
     udp_ports         = "53,88,123,464,749"
 }
@@ -12,7 +12,7 @@ variable "freeipa_replica_count" {
 
 variable "freeipa_version" {
   description = "The pinned version of the freeipa server"
-  default     = "4.7.0-3.fc28"
+  default     = "4.8.7-1.fc32"
 }
 
 variable "vpc_id" {

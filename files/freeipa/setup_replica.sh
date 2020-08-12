@@ -6,6 +6,7 @@ admin_password=
 realm_name=
 hostname_prefix=
 freeipa_version=
+main_ip_address=
 
 until [ ${#} -eq 0 ]; do
     case "${1}" in
@@ -33,6 +34,10 @@ until [ ${#} -eq 0 ]; do
             freeipa_version=${2}
             shift
             ;;
+        --main-ip-address)
+            main_ip_address=${2}
+            shift
+            ;;
     esac
     shift
 done
@@ -45,6 +50,7 @@ cat << EOF > /etc/hosts
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 ${IP} ${hostname}.${hosted_zone} ${hostname}
+${main_ip_address} ${hostname_prefix}-master.${hosted_zone} ${hostname_prefix}-master
 EOF
 
 hostnamectl set-hostname "${hostname}.${hosted_zone}"
@@ -59,4 +65,5 @@ ipa-client-install \
   --principal="admin@${realm_name^^}" \
   --password="${admin_password}" \
   --ntp-server=us.pool.ntp.org \
+  --force-join \
   --unattended

@@ -91,12 +91,13 @@ resource "aws_instance" "freeipa_replica" {
     inline = [
       <<EOF
 sudo bash /tmp/setup_replica.sh \
-  --hostname ${var.iam_hostname_prefix}-replica-${count.index} \
+  --hostname ${var.kerberos_hostname_prefix}-replica-${count.index} \
   --hostname-prefix ${var.iam_hostname_prefix} \
   --hosted-zone ${var.zone_name} \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result} \
-  --freeipa-version ${var.freeipa_version}
+  --freeipa-version ${var.freeipa_version} \
+  --main-ip-address ${aws_instance.freeipa_master.private_ip}
 EOF
     ]
 
@@ -111,7 +112,7 @@ EOF
     inline = [
       <<EOF
 sudo bash /tmp/register_replica.sh \
-  --hostname ${var.iam_hostname_prefix}-replica-${count.index} \
+  --hostname ${var.kerberos_hostname_prefix}-replica-${count.index} \
   --hosted-zone ${var.zone_name} \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result}
@@ -133,6 +134,10 @@ resource "null_resource" "freeipa_replica_finalizer" {
     "aws_route53_record.freeipa_replica_host_record",
     "aws_route53_record.freeipa_replica_host_reverse_record"
   ]
+
+  triggers = {
+    replica_ids = "${join(",", aws_instance.freeipa_replica.*.id)}"
+  }
 
   provisioner "remote-exec" {
     inline = [
