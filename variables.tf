@@ -82,7 +82,7 @@ variable "recovery_window_in_days" {
 }
 
 variable "extra_users" {
-  type        = list(string)
+  type        = list(map(string))
   description = "List of maps of extra users to add to freeipa"
   default     = []
 }
