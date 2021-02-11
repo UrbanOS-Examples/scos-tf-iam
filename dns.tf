@@ -36,7 +36,7 @@ resource "aws_route53_record" "freeipa_replica_host_record" {
 }
 
 resource "aws_route53_record" "keycloak_host_record" {
-  count   = var.deploy_keycloak
+  count   = var.deploy_keycloak ? 1 : 0
   zone_id = var.zone_id
   name    = "${var.iam_hostname_prefix}-oauth"
   type    = "A"
@@ -45,7 +45,7 @@ resource "aws_route53_record" "keycloak_host_record" {
 }
 
 resource "aws_route53_record" "keycloak_lb_record" {
-  count   = var.deploy_keycloak
+  count   = var.deploy_keycloak ? 1 : 0
   zone_id = var.zone_id
   name    = "oauth"
   type    = "A"

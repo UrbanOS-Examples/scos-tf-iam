@@ -60,7 +60,7 @@ resource "aws_security_group_rule" "freeipa_udp_ingress" {
 }
 
 resource "aws_security_group_rule" "freeipa_allow_keycloak" {
-  count                    = var.deploy_keycloak
+  count                    = var.deploy_keycloak ? 1 : 0
   type                     = "ingress"
   from_port                = 0
   to_port                  = 0
@@ -71,7 +71,7 @@ resource "aws_security_group_rule" "freeipa_allow_keycloak" {
 }
 
 resource "aws_security_group" "keycloak_server_sg" {
-  count  = var.deploy_keycloak
+  count  = var.deploy_keycloak ? 1 : 0
   name   = "Keycloak Server SG"
   vpc_id = var.vpc_id
 
@@ -120,7 +120,7 @@ resource "aws_security_group" "keycloak_server_sg" {
 }
 
 resource "aws_security_group" "keycloak_lb_sg" {
-  count  = var.deploy_keycloak
+  count  = var.deploy_keycloak ? 1 : 0
   name   = "Keycloak Loadbalancer SG"
   vpc_id = var.vpc_id
 
