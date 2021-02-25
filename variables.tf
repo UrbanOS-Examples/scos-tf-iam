@@ -1,8 +1,8 @@
 locals {
-    iam_instance_type = "t3.medium"
-    iam_instance_ami  = "ami-0677b95262b16499f"
-    tcp_ports         = "53,80,88,389,443,464,636,749,7389,9443,9444,9445"
-    udp_ports         = "53,88,123,464,749"
+  iam_instance_type = "t3.medium"
+  iam_instance_ami  = "ami-0677b95262b16499f"
+  tcp_ports         = "53,80,88,389,443,464,636,749,7389,9443,9444,9445"
+  udp_ports         = "53,88,123,464,749"
 }
 
 variable "freeipa_replica_count" {
@@ -24,7 +24,7 @@ variable "vpc_cidr" {
 }
 
 variable "subnet_ids" {
-  type        = "list"
+  type        = list(string)
   description = "The output id of the subnet to host the stack"
 }
 
@@ -82,7 +82,7 @@ variable "recovery_window_in_days" {
 }
 
 variable "extra_users" {
-  type        = "list"
+  type        = list(map(string))
   description = "List of maps of extra users to add to freeipa"
   default     = []
 }
@@ -91,3 +91,4 @@ variable "extra_users_count" {
   description = "The number of extra users to be added"
   default     = 0
 }
+

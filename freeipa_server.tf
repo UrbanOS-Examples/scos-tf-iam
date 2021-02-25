@@ -1,13 +1,13 @@
 resource "aws_instance" "freeipa_master" {
-  instance_type          = "${local.iam_instance_type}"
-  ami                    = "${local.iam_instance_ami}"
-  vpc_security_group_ids = ["${aws_security_group.freeipa_server_sg.id}"]
-  subnet_id              = "${element("${var.subnet_ids}", "0")}"
-  key_name               = "${var.ssh_key}"
+  instance_type          = local.iam_instance_type
+  ami                    = local.iam_instance_ami
+  vpc_security_group_ids = [aws_security_group.freeipa_server_sg.id]
+  subnet_id              = element(var.subnet_ids, "0")
+  key_name               = var.ssh_key
 
-  tags {
-      Role     = "iam-server"
-      Name     = "${var.iam_hostname_prefix}-master"
+  tags = {
+    Role = "iam-server"
+    Name = "${var.iam_hostname_prefix}-master"
   }
 
   provisioner "file" {
@@ -16,7 +16,7 @@ resource "aws_instance" "freeipa_master" {
 
     connection {
       type = "ssh"
-      host = "${self.private_ip}"
+      host = self.private_ip
       user = "fedora"
     }
   }
@@ -31,27 +31,28 @@ sudo bash /tmp/setup_master.sh \
   --admin-password ${random_string.freeipa_admin_password.result} \
   --freeipa-version ${var.freeipa_version}
 EOF
+      ,
     ]
 
     connection {
       type = "ssh"
-      host = "${self.private_ip}"
+      host = self.private_ip
       user = "fedora"
     }
   }
 }
 
 resource "aws_instance" "freeipa_replica" {
-  count                  = "${var.freeipa_replica_count}"
-  instance_type          = "${local.iam_instance_type}"
-  ami                    = "${local.iam_instance_ami}"
-  vpc_security_group_ids = ["${aws_security_group.freeipa_server_sg.id}"]
-  subnet_id              = "${element("${var.subnet_ids}", "${(count.index + 1) % 3}")}"
-  key_name               = "${var.ssh_key}"
+  count                  = var.freeipa_replica_count
+  instance_type          = local.iam_instance_type
+  ami                    = local.iam_instance_ami
+  vpc_security_group_ids = [aws_security_group.freeipa_server_sg.id]
+  subnet_id              = element(var.subnet_ids, count.index + 1 % 3)
+  key_name               = var.ssh_key
 
-  tags {
-      Role     = "iam-server"
-      Name     = "${var.iam_hostname_prefix}-replica-${count.index}"
+  tags = {
+    Role = "iam-server"
+    Name = "${var.iam_hostname_prefix}-replica-${count.index}"
   }
 
   provisioner "file" {
@@ -60,7 +61,7 @@ resource "aws_instance" "freeipa_replica" {
 
     connection {
       type = "ssh"
-      host = "${self.private_ip}"
+      host = self.private_ip
       user = "fedora"
     }
   }
@@ -71,7 +72,7 @@ resource "aws_instance" "freeipa_replica" {
 
     connection {
       type = "ssh"
-      host = "${self.private_ip}"
+      host = self.private_ip
       user = "fedora"
     }
   }
@@ -82,7 +83,7 @@ resource "aws_instance" "freeipa_replica" {
 
     connection {
       type = "ssh"
-      host = "${aws_instance.freeipa_master.private_ip}"
+      host = aws_instance.freeipa_master.private_ip
       user = "fedora"
     }
   }
@@ -99,11 +100,12 @@ sudo bash /tmp/setup_replica.sh \
   --freeipa-version ${var.freeipa_version} \
   --main-ip-address ${aws_instance.freeipa_master.private_ip}
 EOF
+      ,
     ]
 
     connection {
       type = "ssh"
-      host = "${self.private_ip}"
+      host = self.private_ip
       user = "fedora"
     }
   }
@@ -117,11 +119,12 @@ sudo bash /tmp/register_replica.sh \
   --realm-name ${var.realm_name} \
   --admin-password ${random_string.freeipa_admin_password.result}
 EOF
+      ,
     ]
 
     connection {
       type = "ssh"
-      host = "${aws_instance.freeipa_master.private_ip}"
+      host = aws_instance.freeipa_master.private_ip
       user = "fedora"
     }
   }
@@ -129,14 +132,14 @@ EOF
 
 # FreeIPA replicas can only be registered with forward and reverse DNS records already created
 resource "null_resource" "freeipa_replica_finalizer" {
-  count = "${var.freeipa_replica_count}"
+  count = var.freeipa_replica_count
   depends_on = [
-    "aws_route53_record.freeipa_replica_host_record",
-    "aws_route53_record.freeipa_replica_host_reverse_record"
+    aws_route53_record.freeipa_replica_host_record,
+    aws_route53_record.freeipa_replica_host_reverse_record,
   ]
 
   triggers = {
-    replica_ids = "${join(",", aws_instance.freeipa_replica.*.id)}"
+    replica_ids = join(",", aws_instance.freeipa_replica.*.id)
   }
 
   provisioner "remote-exec" {
@@ -145,11 +148,12 @@ resource "null_resource" "freeipa_replica_finalizer" {
 sudo bash /tmp/finalize_replica.sh \
   --admin-password ${random_string.freeipa_admin_password.result}
 EOF
+      ,
     ]
 
     connection {
       type = "ssh"
-      host = "${element("${aws_instance.freeipa_replica.*.private_ip}", count.index)}"
+      host = element(aws_instance.freeipa_replica.*.private_ip, count.index)
       user = "fedora"
     }
   }
@@ -161,11 +165,12 @@ resource "random_string" "freeipa_admin_password" {
 }
 
 resource "aws_secretsmanager_secret" "freeipa_admin_password" {
-  name = "${terraform.workspace}-freeipa-admin-password"
-  recovery_window_in_days = "${var.recovery_window_in_days}"
+  name                    = "${terraform.workspace}-freeipa-admin-password"
+  recovery_window_in_days = var.recovery_window_in_days
 }
 
 resource "aws_secretsmanager_secret_version" "freeipa_admin_password" {
-  secret_id     = "${aws_secretsmanager_secret.freeipa_admin_password.id}"
-  secret_string = "${random_string.freeipa_admin_password.result}"
+  secret_id     = aws_secretsmanager_secret.freeipa_admin_password.id
+  secret_string = random_string.freeipa_admin_password.result
 }
+
