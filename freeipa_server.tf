@@ -42,7 +42,7 @@ EOF
   }
   root_block_device {
     volume_size = 6
-    encrypted = true
+    encrypted   = var.encrypt_volumes
   }
 }
 
@@ -135,7 +135,7 @@ EOF
 
   root_block_device {
     volume_size = 6
-    encrypted = true
+    encrypted   = var.encrypt_volumes
   }
 }
 

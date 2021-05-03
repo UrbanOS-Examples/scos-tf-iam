@@ -92,3 +92,8 @@ variable "extra_users_count" {
   default     = 0
 }
 
+variable "encrypt_volumes" {
+  description = "Whether the EC2 instances should have encrypted volumes"
+  default     = true
+}
+
