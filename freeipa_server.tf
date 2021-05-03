@@ -40,6 +40,10 @@ EOF
       user = "fedora"
     }
   }
+  root_block_device {
+    volume_size = 6
+    encrypted = true
+  }
 }
 
 resource "aws_instance" "freeipa_replica" {
@@ -127,6 +131,11 @@ EOF
       host = aws_instance.freeipa_master.private_ip
       user = "fedora"
     }
+  }
+
+  root_block_device {
+    volume_size = 6
+    encrypted = true
   }
 }
 
