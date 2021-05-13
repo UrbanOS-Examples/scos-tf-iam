@@ -5,11 +5,6 @@ locals {
   udp_ports         = "53,88,123,464,749"
 }
 
-variable "freeipa_replica_count" {
-  description = "The number of FreeIPA replica servers to support the master"
-  default     = 1
-}
-
 variable "freeipa_version" {
   description = "The pinned version of the freeipa server"
   default     = "4.8.7-1.fc32"
@@ -90,5 +85,10 @@ variable "extra_users" {
 variable "extra_users_count" {
   description = "The number of extra users to be added"
   default     = 0
+}
+
+variable "encrypt_volumes" {
+  description = "Whether the EC2 instances should have encrypted volumes"
+  default     = true
 }
 

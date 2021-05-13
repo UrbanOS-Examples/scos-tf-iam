@@ -1,6 +1,6 @@
 output "freeipa_server_ips" {
   description = "The ip address(es) of any freeipa replica servers"
-  value       = [aws_instance.freeipa_master.private_ip, formatlist("%v", aws_instance.freeipa_replica.*.private_ip)]
+  value       = [aws_instance.freeipa_master.private_ip]
 }
 
 output "keycloak_server_ip" {
@@ -21,10 +21,5 @@ output "reverse_dns_zone_id" {
 output "freeipa_master_instance_id" {
   description = "The instance id the iam-master ec2 instance"
   value       = aws_instance.freeipa_master.id
-}
-
-output "freeipa_replica_instance_ids" {
-  description = "The instance id the iam-master ec2 instance"
-  value       = [aws_instance.freeipa_replica.*.id]
 }
 

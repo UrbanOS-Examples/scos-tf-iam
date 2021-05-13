@@ -26,15 +26,6 @@ resource "aws_route53_record" "freeipa_master_host_record" {
   records = [aws_instance.freeipa_master.private_ip]
 }
 
-resource "aws_route53_record" "freeipa_replica_host_record" {
-  count   = var.freeipa_replica_count
-  zone_id = var.zone_id
-  name    = "${var.kerberos_hostname_prefix}-replica-${count.index}"
-  type    = "A"
-  ttl     = 5
-  records = [element(aws_instance.freeipa_replica.*.private_ip, count.index)]
-}
-
 resource "aws_route53_record" "keycloak_host_record" {
   count   = var.deploy_keycloak ? 1 : 0
   zone_id = var.zone_id
@@ -69,27 +60,3 @@ resource "aws_route53_record" "freeipa_master_host_reverse_record" {
   ttl     = 5
   records = ["${var.kerberos_hostname_prefix}-master.${var.zone_name}"]
 }
-
-resource "aws_route53_record" "freeipa_replica_host_reverse_record" {
-  count   = var.freeipa_replica_count
-  zone_id = aws_route53_zone.public_hosted_reverse_zone.zone_id
-
-  # Terraform is unable to do a functional "map" transform on a list, so this cannot be broken out of the resource definition because it depends on `count.index` to parse the octets
-  name = "${element(
-    split(
-      ".",
-      element(aws_instance.freeipa_replica.*.private_ip, count.index),
-    ),
-    3,
-    )}.${element(
-    split(
-      ".",
-      element(aws_instance.freeipa_replica.*.private_ip, count.index),
-    ),
-    2,
-  )}"
-  type    = "PTR"
-  ttl     = 5
-  records = ["${var.kerberos_hostname_prefix}-replica-${count.index}.${var.zone_name}"]
-}
-
